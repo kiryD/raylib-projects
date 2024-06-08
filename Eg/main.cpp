@@ -3,6 +3,7 @@
 #include <vector>
 #include "raylib.h"
 #include "rcamera.h"
+#include "CustomCameraModule.h"
 
 
 int main()
@@ -21,9 +22,14 @@ int main()
     camera.fovy = 90.0f;
     camera.projection = CAMERA_PERSPECTIVE;
     BoundingBox camera_rect;
+    BoundingBox cube;
     camera_rect.min = Vector3{ 0.0f, 0.0f, 0.0f };
     camera_rect.max = Vector3{ 1.0f, 2.0f, 1.0f };
+    cube.min = Vector3{ -16.0f, 0.0f, -16.0f };
+    cube.max = Vector3{ 16.0f, 5.0f, 16.0f };
     
+
+    bool collision = true;
 
     int cameraMode = CAMERA_FIRST_PERSON;
     // Making THE EGG and stand for it
@@ -38,8 +44,9 @@ int main()
     while (!WindowShouldClose())
     {
         camera_rect.min = Vector3{ camera.position.x - 1.0f, camera.position.y - 2.0f, camera.position.z - 1.0f };
-        camera_rect.max = Vector3{ camera.position.x + 2.0f, camera.position.y + 2.0f, camera.position.z + 2.0f };
-        //if(CheckCollisionBoxes(camera_rect)
+        camera_rect.max = Vector3{ camera.position.x + 1.0f, camera.position.y + 2.0f, camera.position.z + 1.0f };
+        DrawText(CheckCollisionBoxes(camera_rect, cube) ? "collide" : "not collide", screenWidth / 2, 5, 14, BLACK);
+        collision = CheckCollisionBoxes(camera_rect, cube);
         if (IsKeyPressed(KEY_R))
         {
             cameraMode = CAMERA_FIRST_PERSON;
@@ -53,7 +60,7 @@ int main()
             camera.position.y = 2.0f;
             camera.target.y = 2.0f;
         }
-        UpdateCamera(&camera, cameraMode);                  // Update camera
+        custom::UpdateCamera(&camera, cameraMode, collision);          // Update camera
         BeginDrawing();
         
         ClearBackground(RAYWHITE);
@@ -64,18 +71,18 @@ int main()
         DrawModel(egg_model, position, 0.3f, Fade(WHITE, 2.0f));
         DrawModel(stand_model, position, 0.3f, BLACK);
         
+        //DrawGrid(100, 0.5);
+
         DrawPlane(Vector3{ 0.0f, 0.0f, 0.0f }, Vector2{ 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
         DrawCube(Vector3{ -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, SKYBLUE);     // Draw a blue wall
         DrawCube(Vector3{ 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME);      // Draw a green wall
         DrawCube(Vector3{ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
         DrawCube(Vector3{ 0.0f, 2.5f, -16.0f }, 32.0f, 5.0f, 1.0f, RED);      // Draw a red wall
-        BoundingBox cube;
-        cube.min = Vector3{ 16.0f, 2.5f, 0.0f };
-        cube.max = Vector3{ 17.0f, 7.5f, 32.0f };
-        DrawBoundingBox(cube, RED);
+        
+        //DrawBoundingBox(cube, RED);
         DrawCube(Vector3{ 0.0f, 0.1f, 0.0f }, 1.0f, 1.0f, 1.0f, Fade(GREEN, 0.5f));
         
-        DrawBoundingBox(camera_rect, RED);
+        //DrawBoundingBox(camera_rect, RED);
         // Draw player cube
         if (cameraMode == CAMERA_THIRD_PERSON)
         {
