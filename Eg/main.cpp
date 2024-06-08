@@ -4,75 +4,58 @@
 #include "raylib.h"
 #include "rcamera.h"
 
-#define MAX_COLUMNS 20
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
 int main()
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    // Init
+    const int screenWidth = 1280;
+    const int screenHeight = 720;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera first person");
 
-    // Define the camera to look into our 3d world (position, target, up vector)
+    // Camera position
     Camera3D camera = { 0 };
-    camera.position = Vector3{ 0.0f, 2.0f, 4.0f };    // Camera position
-    camera.target = Vector3{ 0.0f, 2.0f, 0.0f };      // Camera looking at point
-    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 60.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
+    camera.position = Vector3{ 0.0f, 2.0f, 4.0f };
+    camera.target = Vector3{ 0.0f, 2.0f, 0.0f };
+    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
+    camera.fovy = 90.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     int cameraMode = CAMERA_FIRST_PERSON;
 
-    // Generates some random columns
-    std::vector<float> heights(MAX_COLUMNS);
-    std::vector<Vector3> positions(MAX_COLUMNS);
-    std::vector<Color> colors(MAX_COLUMNS);
 
-    for (int i = 0; i < MAX_COLUMNS; i++)
+    DisableCursor();
+
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose())
     {
-        heights[i] = static_cast<float>(GetRandomValue(1, 12));
-        positions[i] = Vector3{ static_cast<float>(GetRandomValue(-15, 15)), heights[i] / 2.0f, static_cast<float>(GetRandomValue(-15, 15)) };
-        colors[i] = Color{ static_cast<unsigned char>(GetRandomValue(20, 255)), static_cast<unsigned char>(GetRandomValue(10, 55)), 30, 255 };
-    }
-
-    DisableCursor();                    // Limit cursor to relative movement inside the window
-
-    SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
-
-    // Main game loop
-    while (!WindowShouldClose())        // Detect window close button or ESC key
-    {
-        // Update
-        //----------------------------------------------------------------------------------
-        // Switch camera mode
         if (IsKeyPressed(KEY_ONE))
         {
             cameraMode = CAMERA_FREE;
-            camera.up = Vector3{ 0.0f, 1.0f, 0.0f }; // Reset roll
+            camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
         }
 
         if (IsKeyPressed(KEY_TWO))
         {
             cameraMode = CAMERA_FIRST_PERSON;
-            camera.up = Vector3{ 0.0f, 1.0f, 0.0f }; // Reset roll
+            camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
         }
 
         if (IsKeyPressed(KEY_THREE))
         {
             cameraMode = CAMERA_THIRD_PERSON;
-            camera.up = Vector3{ 0.0f, 1.0f, 0.0f }; // Reset roll
+            camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
         }
 
         if (IsKeyPressed(KEY_FOUR))
         {
             cameraMode = CAMERA_ORBITAL;
-            camera.up = Vector3{ 0.0f, 1.0f, 0.0f }; // Reset roll
+            camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
+            camera.position = Vector3{ 0.0f, 2.0f, 4.0f };
+            camera.target = Vector3{ 0.0f, 2.0f, 0.0f };
+            camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
+
         }
 
         // Switch camera projection
@@ -96,41 +79,13 @@ int main()
                 // Reset to default view
                 cameraMode = CAMERA_THIRD_PERSON;
                 camera.position = Vector3{ 0.0f, 2.0f, 10.0f };
-                camera.target = Vector3{ 0.0f, 2.0f, 0.0f };
+                camera.target = Vector3{ 0.0f, -2.0f, 0.0f };
                 camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
                 camera.projection = CAMERA_PERSPECTIVE;
                 camera.fovy = 60.0f;
             }
         }
-
-        // Update camera computes movement internally depending on the camera mode
-        // Some default standard keyboard/mouse inputs are hardcoded to simplify use
-        // For advance camera controls, it's reecommended to compute camera movement manually
         UpdateCamera(&camera, cameraMode);                  // Update camera
-
-        /*
-                // Camera PRO usage example (EXPERIMENTAL)
-                // This new camera function allows custom movement/rotation values to be directly provided
-                // as input parameters, with this approach, rcamera module is internally independent of raylib inputs
-                UpdateCameraPro(&camera,
-                    Vector3{
-                        (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-                        (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*0.1f,
-                        (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-                        (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*0.1f,
-                        0.0f                                                // Move up-down
-                    },
-                    Vector3{
-                        GetMouseDelta().x*0.05f,                            // Rotation: yaw
-                        GetMouseDelta().y*0.05f,                            // Rotation: pitch
-                        0.0f                                                // Rotation: roll
-                    },
-                    GetMouseWheelMove()*2.0f);                              // Move to target (zoom)
-        */
-        //----------------------------------------------------------------------------------
-
-        // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -141,13 +96,6 @@ int main()
         DrawCube(Vector3{ -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, BLUE);     // Draw a blue wall
         DrawCube(Vector3{ 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME);      // Draw a green wall
         DrawCube(Vector3{ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
-
-        // Draw some cubes around
-        for (int i = 0; i < MAX_COLUMNS; i++)
-        {
-            DrawCube(positions[i], 2.0f, heights[i], 2.0f, colors[i]);
-            DrawCubeWires(positions[i], 2.0f, heights[i], 2.0f, MAROON);
-        }
 
         // Draw player cube
         if (cameraMode == CAMERA_THIRD_PERSON)
