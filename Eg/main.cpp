@@ -26,10 +26,10 @@ int main()
     
 
     int cameraMode = CAMERA_FIRST_PERSON;
-    // Making THE EGG
+    // Making THE EGG and stand for it
     Model egg_model = LoadModel("egg.obj");
     Model stand_model = LoadModel("stand.obj");
-    Vector3 position = { 0.0f, 1.0f, 0.0f };                    // Set model position
+    Vector3 position = { 0.0f, 1.0f, 0.0f };                    // Set models position
 
     DisableCursor();
 
