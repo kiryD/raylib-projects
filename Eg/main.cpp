@@ -11,7 +11,7 @@ int main()
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
-    InitWindow(screenWidth, screenHeight, "Eg by 'palma' and kiryD");
+    InitWindow(screenWidth, screenHeight, "Eg by Ribx8 and kiryD");
 
     // Camera position
     Camera3D camera = { 0 };
