@@ -25,8 +25,9 @@ int main()
     BoundingBox cube;
     camera_rect.min = Vector3{ 0.0f, 0.0f, 0.0f };
     camera_rect.max = Vector3{ 1.0f, 2.0f, 1.0f };
-    cube.min = Vector3{ -16.0f, 0.0f, -16.0f };
-    cube.max = Vector3{ 16.0f, 5.0f, 16.0f };
+    // Это сами рамки, min это 1 точка и max это 2 точка и вместе куб
+    cube.min = Vector3{ -14.0f, 0.0f, -14.0f };
+    cube.max = Vector3{ 14.0f, 5.0f, 14.0f };
     
 
     bool collision = true;
@@ -71,9 +72,10 @@ int main()
         DrawModel(egg_model, position, 0.3f, Fade(WHITE, 2.0f));
         DrawModel(stand_model, position, 0.3f, BLACK);
         
-        //DrawGrid(100, 0.5);
-
+        //DrawGrid(100, 0.5); <- это можешь разкоментить и там будет показана сетка
+        
         DrawPlane(Vector3{ 0.0f, 0.0f, 0.0f }, Vector2{ 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
+        //                 позиция                    размер         цвет
         DrawCube(Vector3{ -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, SKYBLUE);     // Draw a blue wall
         DrawCube(Vector3{ 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME);      // Draw a green wall
         DrawCube(Vector3{ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
