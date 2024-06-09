@@ -25,7 +25,7 @@ int main()
     BoundingBox cube;
     camera_rect.min = Vector3{ 0.0f, 0.0f, 0.0f };
     camera_rect.max = Vector3{ 1.0f, 2.0f, 1.0f };
-    // Это сами рамки, min это 1 точка и max это 2 точка и вместе куб
+    // Это сами рамки,фывфыв min это 1 точка и max это 2 точка и вместе куб
     cube.min = Vector3{ -14.0f, 0.0f, -14.0f };
     cube.max = Vector3{ 14.0f, 5.0f, 14.0f };
     
