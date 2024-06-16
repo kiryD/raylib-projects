@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <string>
 #include "raylib.h"
 #include "rcamera.h"
 #include "CustomCameraModule.h"
@@ -21,6 +22,7 @@ int main()
     camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
     camera.fovy = 90.0f;
     camera.projection = CAMERA_PERSPECTIVE;
+    float oob = 0.0f;
     BoundingBox camera_rect;
     BoundingBox cube;
     camera_rect.min = Vector3{ 0.0f, 0.0f, 0.0f };
@@ -28,7 +30,8 @@ int main()
     // Это сами рамки, min это 1 точка и max это 2 точка и вместе куб
     cube.min = Vector3{ -6.0f, 0.0f, -6.0f };
     cube.max = Vector3{ 6.0f, 5.0f, 6.0f };
-    
+    auto shader = LoadShader(0, TextFormat("bloom.fs", 330));
+
     bool crack = false;
     bool collision = true;
 
@@ -36,7 +39,7 @@ int main()
     // Making THE EGG and stand for it
     Model egg_model = LoadModel("egg.obj");
     Model stand_model = LoadModel("stand.obj");
-    Model chick_model = LoadModel("chick.gltf");
+    Model chick_model = LoadModel("chick.glb");
     BoundingBox bounds = GetMeshBoundingBox(egg_model.meshes[0]);
     Vector3 position = { 0.0f, 1.0f, 0.0f };                    // Set models position
     Vector3 rotation = { 0.0f, 1.0f, 0.0f };
@@ -51,7 +54,7 @@ int main()
         rotation2 += .80f;
         camera_rect.min = Vector3{ camera.position.x - 1.0f, camera.position.y - 2.0f, camera.position.z - 1.0f };
         camera_rect.max = Vector3{ camera.position.x + 1.0f, camera.position.y + 2.0f, camera.position.z + 1.0f };
-        DrawText(CheckCollisionBoxes(camera_rect, cube) ? "collide" : "not collide", screenWidth / 2, 5, 14, BLACK);
+        // DrawText(CheckCollisionBoxes(camera_rect, cube) ? "collide" : "not collide", screenWidth / 2, 5, 14, BLACK);
         collision = CheckCollisionBoxes(camera_rect, cube);
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) and CheckCollisionBoxes(camera_rect, bounds))
         {
@@ -63,27 +66,31 @@ int main()
             camera.up = Vector3{ 0.0f, 1.0f, 0.0f };
         }
         if (IsKeyDown(KEY_LEFT_SHIFT)) {
-            camera.position.y = 1.0f;
+            camera.position.y = 1.2f;
             camera.target.y = 1.0f;
         }
         if (IsKeyReleased(KEY_LEFT_SHIFT)) {
             camera.position.y = 2.0f;
             camera.target.y = 2.0f;
         }
+        if (!CheckCollisionBoxes(camera_rect, cube)) {
+            oob += 0.1f;
+        }
+        if (oob >= 10.0f) { camera.position = Vector3{ 0.0f, 2.0f, 0.0f }; oob = 0.0f; }
         custom::UpdateCamera(&camera, cameraMode, collision);          // Update camera
         BeginDrawing();
         
         ClearBackground(RAYWHITE);
-
+        
         BeginMode3D(camera);
 
         // Draw egg and stand
 
         if (!crack) DrawModel(egg_model, position, 0.3f, Fade(WHITE, 2.0f));
-        DrawModelEx(chick_model, position, rotation, rotation2, Vector3{ 0.8f, 0.8f, 0.8f }, YELLOW);
+        else DrawModelEx(chick_model, position, rotation, rotation2, Vector3{ 0.8f, 0.8f, 0.8f }, YELLOW);
         DrawModel(stand_model, position, 0.3f, BLACK);
         
-        //DrawGrid(100, 0.5); <- это можешь разкоментить и там будет показана сетка
+        //DrawGrid(100, 0.5);
         
         DrawPlane(Vector3{ 0.0f, 0.0f, 0.0f }, Vector2{ 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
         //                 позиция                    размер         цвет
@@ -98,9 +105,8 @@ int main()
         DrawCube(Vector3{ 8.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 20.0f, LIME);      // Draw a green wall
         DrawCube(Vector3{ 0.0f, 2.5f, 8.0f }, 20.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
         DrawCube(Vector3{ 0.0f, 2.5f, -8.0f }, 20.0f, 5.0f, 1.0f, RED);      // Draw a red wall
-        DrawBoundingBox(cube, RED);
+        // DrawBoundingBox(cube, RED);
         DrawCube(Vector3{ 0.0f, 0.1f, 0.0f }, 1.0f, 1.0f, 1.0f, Fade(GREEN, 0.5f));
-        
         //DrawBoundingBox(camera_rect, RED);
         EndMode3D();
 
