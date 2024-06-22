@@ -2,9 +2,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "raylib.h"
-#include "rcamera.h"
+#include "raylib/raylib.h"
+#include "raylib/rcamera.h"
 #include "CustomCameraModule.h"
+#include "imgui/imgui.h"
+#include "imgui/rlImGui.h"
+#include "imgui/imgui_impl_raylib.h"
+
+void init() {
+    
+}
 
 
 int main()
@@ -48,7 +55,6 @@ int main()
     DisableCursor();
 
     SetTargetFPS(60);
-    
     while (!WindowShouldClose())
     {
         rotation2 += .80f;
